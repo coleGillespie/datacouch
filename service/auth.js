@@ -167,6 +167,12 @@ module.exports = function (t) {
       jsonreq(users.url + user).pipe(resp)
     })
     .must('auth')
+
+  t
+    .route('/dataset/create', function (req, resp) {
+      console.log('create a new dataset here');
+    })
+    .must('auth')
   
   t
     .route('/api/logout', function (req, resp) {
