@@ -138,8 +138,7 @@ app.after = {
   },
   newDatasetForm: function() {
     var doc = {}, docID;
-    couch.request({url: couch.rootPath + "_uuids"}).then( function( data ) { docID = data.uuids[ 0 ]; console.log(docID);});
-
+    couch.request({url: couch.rootPath + "_uuids"}).then( function( data ) { docID = data.uuids[ 0 ] });
     var input = $(".modal #icon-picker")
       , iconThrottler = _.throttle(util.renderIcons, 1000);
     input.keyup(iconThrottler);
@@ -159,9 +158,26 @@ app.after = {
       if (selectedNoun.length > 0) doc.nouns = [app.nouns[selectedNoun]];
 
       util.hide('dialog');
-      console.log(doc);
-      couch.request({url: app.baseURL + "dataset/create", type: "POST", data: JSON.stringify(doc)}).then(function(resp) {
-
+      couch.request({url: app.baseURL + "api/" + doc._id, type: "PUT", data: JSON.stringify(doc)}).then(function(resp) {
+        var dbID = resp.id
+          , dbName = dbID + "/_design/recline"
+          ;
+        function waitForDB(url) {
+          couch.request({url: url, type: "HEAD"}).then(
+            function(resp, status){
+              window.location = app.baseURL + 'edit/#/' + dbID;
+            },
+            function(resp, status){
+              console.log("not created yet...", resp, status);
+              setTimeout(function() {
+                waitForDB(url);
+              }, 500);
+            }
+          )
+        }
+        util.show('dialog');
+        util.render('loadingMessage', 'modal', {message: "Creating dataset..."});
+        waitForDB(couch.rootPath + dbName);
       })
     })
   },
