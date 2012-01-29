@@ -1,7 +1,7 @@
 var _ = require('underscore')
   , url = require('url')
   , defaults = 
-    { couchurl : "http://admin:admin@localhost:5984"
+    { couchurl : "http://cole:cantst0pwontst0p@localhost:5984"
     , vhosturl : "http://localhost:9999"
     , port : 9999
     , twitterKey: process.env['DATACOUCH_TWITTER_KEY']
